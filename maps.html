@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.js"></script>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<style>
+    #mapid { height: 100vh; width: 100vw;}
+</style>
+<body>
+    <div id="mapid"></div>
+    <script>
+
+        function onEachFeature(feature, layer) {
+            layer.on('click', function (e) {
+                alert(e.target.feature.properties.NAME);
+                statename = e.target.feature.properties.NAME.toLowerCase();
+                newurl = 'http://datausa.io/profile/geo/'.concat(statename);
+                window.location.replace(newurl);
+
+            });
+        }
+
+        function getColor(d) {
+            return d > 100000 ? '#d53e4f' :
+                   d > 50000  ? '#fc8d59' :
+                   d > 20000  ? '#fee08b' :
+                   d > 10000 ? '#ffffbf' :
+                   d > 7000   ? '#e6f598' :
+                   d > 5000  ? '#99d594' :
+                   d > 3000  ? '#3288bd' :
+                              '#FFEDA0';
+        }
+
+        function style(feature) {
+            return {
+                fillColor: getColor(feature.properties.CENSUSAREA),
+                weight: 1,
+                opacity: 1,
+                color: '#cda17f',
+//                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
+
+
+
+        function onMapClick(e) {
+            alert("You clicked the map at " + e.latlng);
+        }
+
+        var mymap = L.map('mapid').setView([38, -77], 13);
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+            maxZoom: 18
+        }).addTo(mymap);
+
+
+        $.getJSON('states.geojson',function(data){
+            L.geoJson(data, {onEachFeature: onEachFeature, style: style}).addTo(mymap);
+        });
+
+
+
+//        mymap.on('click', function(e){
+//            alert("Yo");
+//        });
+
+
+    </script>
+</body>
+</html>
